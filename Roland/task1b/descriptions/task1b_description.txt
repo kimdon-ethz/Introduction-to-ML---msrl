@@ -1,0 +1,6 @@
+The code comuptes the following:
+
+- The raw data samples are transformed according to the given non-linear functions phi(x)
+- Then, the set is k-fold cross-validated using ridge regression while optimzing on the best regression parameter
+- Implementation using sklearn RidgeCV library
+- Standardization was tested but did not improve performance.
