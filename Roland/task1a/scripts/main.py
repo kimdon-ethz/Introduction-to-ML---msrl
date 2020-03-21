@@ -58,4 +58,4 @@ for i in xrange(0, len(reg_param)):
 
 # export prediction to csv file
 df = pd.DataFrame(RMSE_list, columns = ['RMSE'])
-df.to_csv('../results/RMSE_list_3.csv', header= False, index=False)
+df.to_csv('../results/result.csv', header= False, index=False)

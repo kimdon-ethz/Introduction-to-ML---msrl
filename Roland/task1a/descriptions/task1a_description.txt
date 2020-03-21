@@ -1,0 +1,5 @@
+The code computes the following:
+
+- The data set is k-fold cross-validated using ridge regression using the sklearn library
+- Cross-validation is done for a range of regularization parameters
+- The mean of the RMSE of the different folds for the regularisation parameters is calculated and saved in a csv file
