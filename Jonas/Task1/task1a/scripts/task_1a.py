@@ -1,81 +1,65 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+__version__ = "1.0.1"
+__maintainer__ = "Jonas Lussi"
+__email__ = "jlussi@ethz.ch"
+
+"""Brief: Loads a csv File with input Vectors X and corresponding outputs y. Performs Ridge Regression with different
+ regularization parameters on 10 Fold-split of the data. Reports average RMS over all splits for each regularization param
+"""
+
+
 import numpy as np
 from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_squared_error
 import pandas as pd
 import os
 from sklearn.model_selection import KFold
-
-
+from sklearn.preprocessing import scale
 
 #Load Train Data
-train = pd.read_csv(os.path.join('..','data','train.csv'))
+df = pd.read_csv(os.path.join('..','data','train.csv'))
 # restructure data
 
 #Format Train Data
-data_X=train.drop(["Id", "y"],axis = 1)
-data_y=train['y']
+data_X=df.drop(["Id", "y"],axis = 1)
+#standardize the input vectors (axis=0, so it's along the columns)
+#data_X=(data_X-data_X.mean(axis=0))/data_X.std(axis=0)
 
-
-#data_set_y = data_set_df['y'].to_numpy()
-#data_set_x = data_set_df.drop(['Id', 'y'], axis=1).to_numpy()
-
+data_y=df['y']
 
 # regularization parameter list
 reg_param = [0.01, 0.1, 1, 10, 100]
 
+#Create object which provides train/test indices to split data in train/test sets. Set random state for repeatability
+kf = KFold(10, shuffle=True, random_state=42)
 
-#Create object which provides train/test indices to split data in train/test sets.
-kf = KFold(10, True, 1)
+#create RMS list
+average_RMS=[]
 
-#Split the Data
-for train_index, test_index in kf.split(X):
-    print("TRAIN:", train_index, "TEST:", test_index)
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
+#Loop over all the regression parameters
+for param in reg_param:
+    #Create object for Ridge Regression
+    R_Reg = Ridge(alpha=param,normalize=False)
 
-#
-# # split training data set into 10-fold and store them in a list
-# k_folds = 10
-# samples_per_fold = np.shape(data_set_x)[0] // k_folds
-# data_folds_x = []
-# data_folds_y = []
-# for k in xrange(0, k_folds):
-#     x_fold_k = data_set_x[k * samples_per_fold:(k + 1) * samples_per_fold]
-#     y_fold_k = data_set_y[k * samples_per_fold:(k + 1) * samples_per_fold]
-#     data_folds_x.append(x_fold_k)
-#     data_folds_y.append(y_fold_k)
-# # add data that remains to last set (data might not evenly divided into k folds,
-# # example: 506 samples, k = 10 -> 9 data folds with 50 samples, last fold with 56 samples)
-# data_remains_x = data_set_x[(k + 1) * samples_per_fold:]
-# data_remains_y = data_set_y[(k + 1) * samples_per_fold:]
-# data_folds_x[-1] = np.vstack((data_folds_x[-1], data_remains_x))
-# data_folds_y[-1] = np.hstack((data_folds_y[-1], data_remains_y))
-#
-#
-# # perform cross validation for ridge regression for every regularization parameter
-# # looping over all regularization parameters
-# RMSE_list = []
-# for i in xrange(0, len(reg_param)):
-#     # looping over all folds
-#     RMSE_folds_list = []
-#     for k in xrange(0, k_folds):
-#         # seperate x and y data of each fold into test and validation sets
-#         valid_x = data_folds_x[k]
-#         valid_y = data_folds_y[k]
-#         test_x = np.vstack((data_folds_x[:k] + data_folds_x[k+1 :]))
-#         test_y = np.hstack((data_folds_y[:k] + data_folds_y[k+1 :]))
-#         # fit regression model to all test folds
-#         clf = Ridge(alpha=reg_param[i])
-#         clf.fit(test_x, test_y)
-#         # make prediction on validation fold
-#         predict_y = clf.predict(valid_x)
-#         # evaluate performance performance of prediction obtained test fold with ground truth of validation fold
-#         RMSE_fold = mean_squared_error(valid_y, predict_y) ** 0.5
-#         # store RMSE of individual folds in list
-#         RMSE_folds_list.append(RMSE_fold)
-#     # average folds from and add to new list
-#     RMSE_list.append(np.mean(RMSE_folds_list))
-#
-# # export prediction to csv file
-# df = pd.DataFrame(RMSE_list, columns = ['RMSE'])
-# df.to_csv('../result/RMSE_list_1.csv', header= False, index=False)
+    # Initialize RMS
+    RMS = 0
+
+    #Split the Data and perform regression; iterate over generator object kf.split(..)
+    for train_index, test_index in kf.split(data_X):
+        X_train, X_test = data_X.iloc[train_index], data_X.iloc[test_index]
+        y_train, y_test = data_y.iloc[train_index], data_y.iloc[test_index]
+        #fit regressor to current fold
+        R_Reg.fit(X_train, y_train)
+        #predict on the remaining test set in current fold
+        y_pred= R_Reg.predict(X_test)
+        #get RMS in current fold
+        RMS=RMS+mean_squared_error(y_test, y_pred) ** 0.5
+
+    #Append average RMS to list for writing to csv
+    average_RMS.append(RMS/10)
+
+#Write to file
+myFrame = pd.DataFrame(average_RMS)
+myFrame.to_csv('../results/outTask1.csv', index=False,header=False)
