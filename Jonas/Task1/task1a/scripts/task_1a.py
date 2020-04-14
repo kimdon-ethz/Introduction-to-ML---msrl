@@ -62,4 +62,4 @@ for param in reg_param:
 
 #Write to file
 myFrame = pd.DataFrame(average_RMS)
-myFrame.to_csv('../results/outTask1.csv', index=False,header=False)
+myFrame.to_csv('../results/outTask1a.csv', index=False,header=False)
