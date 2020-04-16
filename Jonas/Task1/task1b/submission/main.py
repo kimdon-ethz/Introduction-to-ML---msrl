@@ -102,7 +102,7 @@ for i in solvers:
 
 
 #use that reg_param to train on all the data, to increase performance:
-R_Reg = Ridge(alpha=opt_reg['sag'],normalize=False,max_iter=6000,tol=1e-3,solver="sag",random_state=1234)
+R_Reg = Ridge(alpha=opt_reg['sag'],normalize=False,max_iter=6000,tol=1e-3,solver="sag",random_state=1245)
 R_Reg.fit(X_features, data_y)
 
 print('coefs=',R_Reg.coef_)
