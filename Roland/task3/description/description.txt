@@ -1,0 +1,9 @@
+Description Task 3
+===================
+
+The given data is heavily imbalanced. Therefore, the code first seperates the data into a majority and minority class and upsacles the minority class.
+The features are slightly modified. The given sequence is seperated into individual sites, which form a feature each.
+Then feature extractionis performed using DictVectorizer.
+The data is split into a test and training set for optimization.
+Finally, the neurel network is built, trained, and used to make the prediction.
+A multilayer perceptron classifier with 300 neurons and 1 layer seemed to work fairly well.
