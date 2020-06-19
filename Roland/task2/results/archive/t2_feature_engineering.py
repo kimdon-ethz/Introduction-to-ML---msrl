@@ -103,7 +103,7 @@ def feature_engineering_regression(data_patient):
 
     return data_new
 
-"""
+
 # plot one patient data
 patient_id = pids[0]
 # data of only one patient
@@ -111,29 +111,29 @@ data_patient = data_significant.loc[data['pid'] == patient_id]
 plot_features(data_patient, features_non_spars)
 patient_imputed = impute_knn_patient_data(data_patient)
 plot_features(patient_imputed, features_non_spars)
-"""
 
-# creating new data set with feature engineered data
-data_new = pd.DataFrame()
-print('imputing data')
-# looping through every patient
-for pid in pids:
-    # getting data of one patient
-    data_patient = data.loc[data['pid'] == pid]
-    # imputing non-spars data: knn imputation
-    patient_non_spars_imputed = impute_knn_patient_data(data_patient[features_non_spars])
-    features_non_spars_new = feature_engineering_regression(patient_non_spars_imputed)
-    # spars data: counting number of measruements
-    features_spars_new = feature_engineering_counting(data_patient[features_spars])
 
-    # new features of one patient
-    age = int(data_patient.loc[:,'Age'].values[0])
-    data_patient_new = pd.DataFrame({'pid': [pid], 'Age': [age]}).join(features_non_spars_new.join(features_spars_new))
-    # append to new features to new data set
-    data_new = data_new.append(data_patient_new)
+# # creating new data set with feature engineered data
+# data_new = pd.DataFrame()
+# print('imputing data')
+# # looping through every patient
+# for pid in pids:
+#     # getting data of one patient
+#     data_patient = data.loc[data['pid'] == pid]
+#     # imputing non-spars data: knn imputation
+#     patient_non_spars_imputed = impute_knn_patient_data(data_patient[features_non_spars])
+#     features_non_spars_new = feature_engineering_regression(patient_non_spars_imputed)
+#     # spars data: counting number of measruements
+#     features_spars_new = feature_engineering_counting(data_patient[features_spars])
 
-print('exporting imputed features')
-data_new.to_csv('out.csv', index=False, na_rep='nan', float_format='%.3f')
+#     # new features of one patient
+#     age = int(data_patient.loc[:,'Age'].values[0])
+#     data_patient_new = pd.DataFrame({'pid': [pid], 'Age': [age]}).join(features_non_spars_new.join(features_spars_new))
+#     # append to new features to new data set
+#     data_new = data_new.append(data_patient_new)
+
+# print('exporting imputed features')
+# data_new.to_csv('out.csv', index=False, na_rep='nan', float_format='%.3f')
 
 plt.show()
         
