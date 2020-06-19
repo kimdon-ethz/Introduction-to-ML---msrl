@@ -34,19 +34,19 @@ def main():
         y_train = np.array(labels_train[label])[0:reduced_size]
         X_predict = np.array(features_predict)[0:reduced_size]
 
-        # split into test and validation for hyperparameter tuning
-        X_train, X_test, y_train, y_test = train_test_split( 
-                            X_train, y_train, 
-                            test_size = 0.20, random_state = 101)
-        print('X_train: ', np.shape(X_train))
-        print('X_test: ', np.shape(X_test))
-        print('y_train: ', np.shape(y_train))
-        print('y_test: ', np.shape(y_test))
+        # # split into test and validation for hyperparameter tuning
+        # X_train, X_test, y_train, y_test = train_test_split( 
+        #                     X_train, y_train, 
+        #                     test_size = 0.20, random_state = 101)
+        # print('X_train: ', np.shape(X_train))
+        # print('X_test: ', np.shape(X_test))
+        # print('y_train: ', np.shape(y_train))
+        # print('y_test: ', np.shape(y_test))
 
         # scaling data
         scaler = MinMaxScaler()
         X_train = scaler.fit_transform(X_train)
-        X_test = scaler.transform(X_test)
+        # X_test = scaler.transform(X_test)
         X_predict = scaler.fit_transform(X_predict)
 
         model = SVC(gamma='auto', kernel='rbf', C=1, probability=True, class_weight='balanced')
@@ -55,45 +55,45 @@ def main():
         print('learning : ', label)
         model.fit(X_train, y_train)
 
-        print('predicting : ', label)
-        predicted_label = model.predict_proba(X_test)
-        metrics_default = metrics.roc_auc_score(np.array(y_test), np.array(predicted_label[:,1]))
-        print('metrics ROC : ', label)
-        print(metrics_default)
+        # print('predicting : ', label)
+        # predicted_label = model.predict_proba(X_test)
+        # metrics_default = metrics.roc_auc_score(np.array(y_test), np.array(predicted_label[:,1]))
+        # print('metrics ROC : ', label)
+        # print(metrics_default)
 
-
+        ##################
         # defining parameter range 
-        param_grid = {'C': [0.1, 1, 10, 100, 1000],
-                      'kernel': ['rbf'],
-                      'probability': [True],
-                      'class_weight': ['balanced']} 
+        # param_grid = {'C': [0.1, 1, 10, 100, 1000],
+        #               'kernel': ['rbf'],
+        #               'probability': [True],
+        #               'class_weight': ['balanced']} 
         
-        grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='roc_auc') 
+        # grid = GridSearchCV(SVC(), param_grid, refit = True, verbose = 3, scoring='roc_auc') 
           
-        # fitting the model for grid search 
-        grid.fit(X_train, y_train)
+        # # fitting the model for grid search 
+        # grid.fit(X_train, y_train)
 
-        print()
-        print('best parameter after tuning : ')
-        print(grid.best_params_) 
-        print()
-        print('model after hyper-parameter tuning ')
-        print(grid.best_estimator_)
-        hyperparams[label] = [grid.best_estimator_.C, grid.best_estimator_.gamma]
+        # print()
+        # print('best parameter after tuning : ')
+        # print(grid.best_params_) 
+        # print()
+        # print('model after hyper-parameter tuning ')
+        # print(grid.best_estimator_)
+        # hyperparams[label] = [grid.best_estimator_.C, grid.best_estimator_.gamma]
         
-        # model_grid = SVC(gamma='auto', kernel='rbf', probability=True, class_weight='balanced')
-        # model_grid.fit(X_train, y_train)
-        # predicting on the test set to get a notion of the metrics
-        grid_predictions = grid.predict_proba(X_test) 
-        # print classification report 
-        metrics_grid = metrics.roc_auc_score(np.array(y_test), np.array(grid_predictions[:,1]))
-        print()
-        print('metrics ROC : ', label)
-        print(metrics_grid)
-        metrics_summary[label] = [metrics_grid]
+        # # predicting on the test set to get a notion of the metrics
+        # grid_predictions = grid.predict_proba(X_test) 
+        # # print classification report 
+        # metrics_grid = metrics.roc_auc_score(np.array(y_test), np.array(grid_predictions[:,1]))
+        # print()
+        # print('metrics ROC : ', label)
+        # print(metrics_grid)
+        # metrics_summary[label] = [metrics_grid]
+        ###################
 
         #predict on the provided test set
-        y_predicted = grid.predict_proba(X_predict)
+        y_predicted = model.predict_proba(X_predict)
+        # y_predicted = grid.predict_proba(X_predict)
         prediction[label] = y_predicted[:,1]
 
     print()

@@ -18,8 +18,8 @@ def main():
     results = pd.concat([results_tests, results_vitals.drop(['pid'], axis=1)], axis=1, sort=False)
     print(results.head())
     
-    results.to_csv('prediction.csv', index=False, float_format='%.3f')
-    #results_tests.to_csv('prediction.zip', index=False, float_format='%.3f', compression='zip')
+    # results.to_csv('prediction.csv', index=False, float_format='%.3f')
+    results.to_csv('prediction.zip', index=False, float_format='%.3f', compression='zip')
 
 
 if __name__ == "__main__":
